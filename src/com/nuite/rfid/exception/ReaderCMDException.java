@@ -8,14 +8,14 @@ package com.nuite.rfid.exception;
  * @Version: 1.0
  */
 
-public class CMDException extends RuntimeException {
+public class ReaderCMDException extends RuntimeException {
 
     /**
      * Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public CMDException() {
+    public ReaderCMDException() {
         super();
     }
 
@@ -27,7 +27,7 @@ public class CMDException extends RuntimeException {
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-    public CMDException(String message) {
+    public ReaderCMDException(String message) {
         super(message);
     }
 
@@ -45,7 +45,7 @@ public class CMDException extends RuntimeException {
      *                unknown.)
      * @since 1.4
      */
-    public CMDException(String message, Throwable cause) {
+    public ReaderCMDException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -62,7 +62,7 @@ public class CMDException extends RuntimeException {
      *              unknown.)
      * @since 1.4
      */
-    public CMDException(Throwable cause) {
+    public ReaderCMDException(Throwable cause) {
         super(cause);
     }
 }

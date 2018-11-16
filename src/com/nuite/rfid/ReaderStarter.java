@@ -1,12 +1,7 @@
 package com.nuite.rfid;
 
-import com.nuite.rfid.core.CMDHelper;
 import com.nuite.rfid.core.ReaderCore;
-import com.nuite.rfid.option.AntennaMode;
-import com.rfid.RFIDReaderHelper;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import com.nuite.rfid.domain.ReaderConfigInfo;
 
 /**
  * 读写器启动器
@@ -21,79 +16,58 @@ public class ReaderStarter {
     /**
      * 读写器内核
      */
-    private static final ReaderCore core = ReaderCore.getInstance();
-    private static RFIDReaderHelper readerHelper;
+    private ReaderCore core = new ReaderCore();
 
-    private ReaderStarter() {
+    public ReaderStarter() {
     }
 
     /**
-     * 启动读写器
-     */
-    public static void start(String ip, int port) throws Exception {
-        readerHelper = core.initAndDefaultSetting(ip, port);
-        if (readerHelper == null) {
-            throw new RuntimeException("reader is null!");
-        }
-    }
-
-    /**
-     * 盘存标签(实时上传标签数据) 单天线
+     * 启动读写器，使用默认配置
      *
-     * @param antenna
-     * @throws InterruptedException
+     * @param ip
+     * @param port
+     * @param antennas [1,2,3,4]
+     * @throws Exception
      */
-    public static void executeRealTimeInventory(byte antenna) throws InterruptedException {
-        CMDHelper.setWorkAntenna(readerHelper, antenna);
-        CMDHelper.executeRealTimeInventory(readerHelper);
+    public void start(String ip, int port, int[] antennas) throws Exception {
+        core.initAndDefaultSetting(ip, port);
+        /*执行盘存*/
+        core.executeRealTimeInventory(antennas);
     }
 
     /**
-     * 盘存标签(实时上传标签数据) 多天线
+     * 启动读写器，使用自定义配置
      *
-     * @param antennas
-     * @throws InterruptedException
+     * @param configInfo 自定义配置
+     * @throws Exception
      */
-    public static void executeRealTimeInventory(byte[] antennas) throws InterruptedException {
-        CMDHelper.exeRealTimeInventoryBetweenAntennas(readerHelper, antennas);
+    public void start(ReaderConfigInfo configInfo) throws Exception {
+
+        /*校验配置参数*/
+        core.checkSettingParam(configInfo);
+        /*初始化连接，获取reader对象*/
+        core.init(configInfo.getIP(), Integer.parseInt(configInfo.getPort()));
+        /*执行自定义配置*/
+        core.doSetting(configInfo);
+        /*执行盘存*/
+        core.executeRealTimeInventory(configInfo.getUseAntennaPort());
+
+    }
+
+    /**
+     * 获取启动器核心
+     *
+     * @return
+     */
+    public ReaderCore getCore() {
+        return core;
     }
 
     /**
      * 关闭读写器
      */
-    public static void close() {
+    public void close() {
         core.destroy();
-    }
-
-    public static void main(String[] args) {
-        try {
-            /*启动读写器*/
-            start("192.168.0.178", 4001);
-
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    //close();
-                    core.pauseInventory();
-                }
-            }, 1000 * 7);
-
-
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    //close();
-                    core.continueInventory();
-                }
-            }, 1000 * 15);
-            /*盘存标签(实时上传标签数据) 单天线*/
-            executeRealTimeInventory(AntennaMode.ANTENNA_1);
-            /*盘存标签(实时上传标签数据) 多天线*/
-            //executeRealTimeInventory(new byte[]{AntennaMode.ANTENNA_1, AntennaMode.ANTENNA_2});
-        } catch (Exception e) {
-            e.printStackTrace();
-            close();
-        }
     }
 
 }

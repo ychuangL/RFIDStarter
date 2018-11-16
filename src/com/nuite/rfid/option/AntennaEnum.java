@@ -10,21 +10,27 @@ package com.nuite.rfid.option;
 
 public enum AntennaEnum {
 
-    ANTENNA_1((byte) 0x00, "天线一"),
-    ANTENNA_2((byte) 0x01, "天线二"),
-    ANTENNA_3((byte) 0x02, "天线三"),
-    ANTENNA_4((byte) 0x03, "天线四");
+    ANTENNA_1(1, (byte) 0x00, "天线一"),
+    ANTENNA_2(2, (byte) 0x01, "天线二"),
+    ANTENNA_3(3, (byte) 0x02, "天线三"),
+    ANTENNA_4(4, (byte) 0x03, "天线四");
 
-    byte value;
+    int intValue;
+    byte byteValue;
     String name;
 
-    AntennaEnum(byte value, String name) {
-        this.value = value;
+    AntennaEnum(int intValue, byte byteValue, String name) {
+        this.intValue = intValue;
+        this.byteValue = byteValue;
         this.name = name;
     }
 
-    public byte getValue() {
-        return value;
+    public int getIntValue() {
+        return intValue;
+    }
+
+    public byte getByteValue() {
+        return byteValue;
     }
 
     public String getName() {
@@ -34,10 +40,36 @@ public enum AntennaEnum {
     public static String getNameByValue(byte btAntenna) {
         AntennaEnum[] antennaEnums = AntennaEnum.values();
         for (AntennaEnum antenna : antennaEnums) {
-            if (antenna.getValue() == btAntenna) {
+            if (antenna.getByteValue() == btAntenna) {
                 return antenna.getName();
             }
         }
         return null;
+    }
+
+    public static byte getByteValueByInt(int intValue) {
+        AntennaEnum[] antennaEnums = AntennaEnum.values();
+        for (AntennaEnum antenna : antennaEnums) {
+            if (antenna.getIntValue() == intValue) {
+                return antenna.getByteValue();
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 判断元素是否存在
+     *
+     * @param intValue
+     * @return
+     */
+    public static boolean isExist(int intValue) {
+        AntennaEnum[] antennaEnums = AntennaEnum.values();
+        for (AntennaEnum antenna : antennaEnums) {
+            if (antenna.getIntValue() == intValue) {
+                return true;
+            }
+        }
+        return false;
     }
 }

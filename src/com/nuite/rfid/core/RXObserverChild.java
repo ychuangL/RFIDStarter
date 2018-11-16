@@ -15,11 +15,11 @@ import com.rfid.rxobserver.bean.RXInventoryTag;
 
 public class RXObserverChild extends RXObserver {
 
-    public static byte exeCMDStatus;
-    public static RXInventoryTag rxInventoryTag;
-    public static RXInventoryTag.RXInventoryTagEnd rxInventoryTagEnd;
-    public static ReaderSetting setting;
-    public static TagPool tagPool = TagPool.getInstance();
+    private byte exeCMDStatus;
+    private RXInventoryTag rxInventoryTag;
+    private RXInventoryTag.RXInventoryTagEnd rxInventoryTagEnd;
+    private ReaderSetting setting;
+    private TagPool tagPool = TagPool.getInstance();
 
     /**
      * 每读到一个标签，就回调一次
@@ -29,8 +29,8 @@ public class RXObserverChild extends RXObserver {
     @Override
     protected void onInventoryTag(RXInventoryTag tag) {
         //PrintUtils.printRXInventoryTag(tag);
-        rxInventoryTag = tag;
-        tagPool.saveTag(tag.strEPC);
+        this.rxInventoryTag = tag;
+        this.tagPool.saveTag(tag.strEPC);
     }
 
     /**
@@ -41,9 +41,9 @@ public class RXObserverChild extends RXObserver {
     @Override
     protected void onInventoryTagEnd(RXInventoryTag.RXInventoryTagEnd endTag) {
         PrintUtils.printRXInventoryTagEnd(endTag);
-        rxInventoryTagEnd = endTag;
-        if (tagPool.isNotEmpty()) {
-            tagPool.removeExpired();
+        this.rxInventoryTagEnd = endTag;
+        if (this.tagPool.isNotEmpty()) {
+            this.tagPool.removeExpired();
         }
     }
 
@@ -56,7 +56,7 @@ public class RXObserverChild extends RXObserver {
     @Override
     protected void onExeCMDStatus(byte cmd, byte status) {
         //System.out.format("CDM: 0x%s   RETURN_STATUS: 0x%S \n", String.format("%02X", cmd), String.format("%02x", status));
-        exeCMDStatus = status;
+        this.exeCMDStatus = status;
     }
 
     /**
@@ -67,6 +67,26 @@ public class RXObserverChild extends RXObserver {
     @Override
     protected void refreshSetting(ReaderSetting readerSetting) {
         //PrintUtils.printSetting(readerSetting);
-        setting = readerSetting;
+        this.setting = readerSetting;
+    }
+
+    public byte getExeCMDStatus() {
+        return exeCMDStatus;
+    }
+
+    public RXInventoryTag getRxInventoryTag() {
+        return rxInventoryTag;
+    }
+
+    public RXInventoryTag.RXInventoryTagEnd getRxInventoryTagEnd() {
+        return rxInventoryTagEnd;
+    }
+
+    public ReaderSetting getSetting() {
+        return setting;
+    }
+
+    public TagPool getTagPool() {
+        return tagPool;
     }
 }

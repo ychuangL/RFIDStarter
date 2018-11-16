@@ -1,6 +1,6 @@
 package com.nuite.rfid.core;
 
-import com.nuite.rfid.exception.CMDException;
+import com.nuite.rfid.exception.ReaderCMDException;
 import com.nuite.rfid.option.AntennaEnum;
 import com.nuite.rfid.util.CoreParam;
 import com.rfid.RFIDReaderHelper;
@@ -15,7 +15,6 @@ import com.rfid.RFIDReaderHelper;
  */
 
 public class CMDHelper {
-
     /**
      * 命令执行间隔，毫秒
      */
@@ -34,125 +33,153 @@ public class CMDHelper {
     /**
      * 获取reader版本号
      *
-     * @param readerHelper
+     * @param readerCore
      * @return
      */
-    public static String getReaderVersion(RFIDReaderHelper readerHelper) throws InterruptedException {
-        if (readerHelper == null) return null;
+    public static String getReaderVersion(ReaderCore readerCore) throws InterruptedException {
+        RFIDReaderHelper readerHelper = readerCore.getReaderHelper();
+        RXObserverChild rxObserverChild = readerCore.getRXObserver();
+        if (readerHelper == null || rxObserverChild == null) return null;
+
         int res = readerHelper.getFirmwareVersion(CoreParam.READER_ID);
         if (res != 0) {
-            throw new CMDException("getReaderVersion is failed");
+            throw new ReaderCMDException("getReaderVersion is failed");
         }
 
         Thread.sleep(cmdInternal);
-        if (RXObserverChild.setting == null) return null;
-        return RXObserverChild.setting.btMajor + "." + RXObserverChild.setting.btMinor;
+        if (rxObserverChild.getSetting() == null) return null;
+        return rxObserverChild.getSetting().btMajor + "." + rxObserverChild.getSetting().btMinor;
     }
 
     /**
      * 获取当前设备工作温度
      *
-     * @param readerHelper
+     * @param readerCore
      * @return
      */
-    public static String getReaderTemperature(RFIDReaderHelper readerHelper) throws InterruptedException {
+    public static String getReaderTemperature(ReaderCore readerCore) throws InterruptedException {
+        RFIDReaderHelper readerHelper = readerCore.getReaderHelper();
+        RXObserverChild rxObserverChild = readerCore.getRXObserver();
+        if (readerHelper == null || rxObserverChild == null) return null;
+
         int res = readerHelper.getReaderTemperature(CoreParam.READER_ID);
         if (res != 0) {
-            throw new CMDException("getReaderTemperature is failed");
+            throw new ReaderCMDException("getReaderTemperature is failed");
         }
 
         Thread.sleep(cmdInternal);
-        if (RXObserverChild.setting == null) return null;
-        return RXObserverChild.setting.btTemperature + "";
+        if (rxObserverChild.getSetting() == null) return null;
+        return rxObserverChild.getSetting().btTemperature + "";
     }
 
     /**
      * 获取当前天线工作天线
      *
-     * @param readerHelper
+     * @param readerCore
      * @return
      * @throws InterruptedException
      */
-    public static Integer getWorkAntenna(RFIDReaderHelper readerHelper) throws InterruptedException {
+    public static Integer getWorkAntenna(ReaderCore readerCore) throws InterruptedException {
+
+        RFIDReaderHelper readerHelper = readerCore.getReaderHelper();
+        RXObserverChild rxObserverChild = readerCore.getRXObserver();
+        if (readerHelper == null || rxObserverChild == null) return null;
+
         int res = readerHelper.getWorkAntenna(CoreParam.READER_ID);
         if (res != 0) {
-            throw new CMDException("getWorkAntenna is failed");
+            throw new ReaderCMDException("getWorkAntenna is failed");
         }
         Thread.sleep(cmdInternal);
-        if (RXObserverChild.setting == null) return null;
-        return RXObserverChild.setting.btWorkAntenna + 1;
+        if (rxObserverChild.getSetting() == null) return null;
+        return rxObserverChild.getSetting().btWorkAntenna + 1;
     }
 
     /**
      * 获取射频输出功率
      *
-     * @param readerHelper
+     * @param readerCore
      * @return
      * @throws InterruptedException
      */
-    public static byte getOutputPower(RFIDReaderHelper readerHelper) throws InterruptedException {
+    public static byte getOutputPower(ReaderCore readerCore) throws InterruptedException {
+        RFIDReaderHelper readerHelper = readerCore.getReaderHelper();
+        RXObserverChild rxObserverChild = readerCore.getRXObserver();
+        if (readerHelper == null || rxObserverChild == null) return -1;
+
         int res = readerHelper.getOutputPower(CoreParam.READER_ID);
         if (res != 0) {
-            throw new CMDException("getOutputPower is failed");
+            throw new ReaderCMDException("getOutputPower is failed");
         }
         Thread.sleep(cmdInternal);
-        if (RXObserverChild.setting == null || RXObserverChild.setting.btAryOutputPower == null) return 0;
-        return RXObserverChild.setting.btAryOutputPower[0];
+        if (rxObserverChild.getSetting() == null || rxObserverChild.getSetting().btAryOutputPower == null) return -1;
+        return rxObserverChild.getSetting().btAryOutputPower[0];
     }
 
     /**
      * 获取频谱范围
      *
-     * @param readerHelper
+     * @param readerCore
      * @return {射频规范，频谱起点参数，频谱结束点参数}，详细参见【频率参数对应表】
      * @throws InterruptedException
      */
-    public static byte[] getFrequencyRegion(RFIDReaderHelper readerHelper) throws InterruptedException {
+    public static byte[] getFrequencyRegion(ReaderCore readerCore) throws InterruptedException {
+        RFIDReaderHelper readerHelper = readerCore.getReaderHelper();
+        RXObserverChild rxObserverChild = readerCore.getRXObserver();
+        if (readerHelper == null || rxObserverChild == null) return null;
+
         int res = readerHelper.getFrequencyRegion(CoreParam.READER_ID);
         if (res != 0) {
-            throw new CMDException("getFrequencyRegion is failed");
+            throw new ReaderCMDException("getFrequencyRegion is failed");
         }
         Thread.sleep(cmdInternal);
 
-        if (RXObserverChild.setting == null) return null;
-        byte[] btArr = {RXObserverChild.setting.btRegion, RXObserverChild.setting.btFrequencyStart, RXObserverChild.setting.btFrequencyEnd};
+        if (rxObserverChild.getSetting() == null) return null;
+        byte[] btArr = {rxObserverChild.getSetting().btRegion, rxObserverChild.getSetting().btFrequencyStart, rxObserverChild.getSetting().btFrequencyEnd};
         return btArr;
     }
 
     /**
      * 获取射频链路的通讯速率模式（0xD0 ,0xD1 ,0xD2 ,0xD3）推荐0xD1
      *
-     * @param readerHelper
+     * @param readerCore
      * @return
      * @throws InterruptedException
      */
-    public static byte getRfLinkProfile(RFIDReaderHelper readerHelper) throws InterruptedException {
+    public static byte getRfLinkProfile(ReaderCore readerCore) throws InterruptedException {
+        RFIDReaderHelper readerHelper = readerCore.getReaderHelper();
+        RXObserverChild rxObserverChild = readerCore.getRXObserver();
+        if (readerHelper == null || rxObserverChild == null) return -1;
+
         int res = readerHelper.getRfLinkProfile(CoreParam.READER_ID);
         if (res != 0) {
-            throw new CMDException("getRfLinkProfile is failed");
+            throw new ReaderCMDException("getRfLinkProfile is failed");
         }
         Thread.sleep(cmdInternal);
 
-        if (RXObserverChild.setting == null) return 0;
-        return RXObserverChild.setting.btRfLinkProfile;
+        if (rxObserverChild.getSetting() == null) return -1;
+        return rxObserverChild.getSetting().btRfLinkProfile;
     }
 
     /**
      * 获取天线灵敏度回波损耗阀值
      *
-     * @param readerHelper
+     * @param readerCore
      * @return
      * @throws InterruptedException
      */
-    public static byte getAntConnectionDetector(RFIDReaderHelper readerHelper) throws InterruptedException {
+    public static byte getAntConnectionDetector(ReaderCore readerCore) throws InterruptedException {
+        RFIDReaderHelper readerHelper = readerCore.getReaderHelper();
+        RXObserverChild rxObserverChild = readerCore.getRXObserver();
+        if (readerHelper == null || rxObserverChild == null) return -1;
+
         int res = readerHelper.getAntConnectionDetector(CoreParam.READER_ID);
         if (res != 0) {
-            throw new CMDException("getAntConnectionDetector is failed");
+            throw new ReaderCMDException("getAntConnectionDetector is failed");
         }
         Thread.sleep(cmdInternal);
 
-        if (RXObserverChild.setting == null) return 0;
-        return RXObserverChild.setting.btAntDetector;
+        if (rxObserverChild.getSetting() == null) return -1;
+        return rxObserverChild.getSetting().btAntDetector;
     }
 
     /**
@@ -164,9 +191,11 @@ public class CMDHelper {
      * @throws InterruptedException
      */
     public static boolean setBeeperMode(RFIDReaderHelper readerHelper, byte beeperMode) throws InterruptedException {
+
+
         int res = readerHelper.setBeeperMode(CoreParam.READER_ID, beeperMode);
         if (res != 0) {
-            throw new CMDException("setBeeperMode is failed");
+            throw new ReaderCMDException("setBeeperMode is failed");
         }
         Thread.sleep(cmdInternal);
         return true;
@@ -183,7 +212,7 @@ public class CMDHelper {
     public static boolean setWorkAntenna(RFIDReaderHelper readerHelper, byte antennaMode) throws InterruptedException {
         int res = readerHelper.setWorkAntenna(CoreParam.READER_ID, antennaMode);
         if (res != 0) {
-            throw new CMDException("setWorkAntenna is failed");
+            throw new ReaderCMDException("setWorkAntenna is failed");
         }
         Thread.sleep(cmdInternal);
         return true;
@@ -200,7 +229,7 @@ public class CMDHelper {
     public static boolean setOutputPower(RFIDReaderHelper readerHelper, byte btOutputPower) throws InterruptedException {
         int res = readerHelper.setOutputPower(CoreParam.READER_ID, btOutputPower);
         if (res != 0) {
-            throw new CMDException("setOutputPower is failed");
+            throw new ReaderCMDException("setOutputPower is failed");
         }
         Thread.sleep(cmdInternal);
         return true;
@@ -219,7 +248,7 @@ public class CMDHelper {
     public static boolean setFrequencyRegion(RFIDReaderHelper readerHelper, byte frequencyRegionMode, byte btStartRegion, byte btEndRegion) throws InterruptedException {
         int res = readerHelper.setFrequencyRegion(CoreParam.READER_ID, frequencyRegionMode, btStartRegion, btEndRegion);
         if (res != 0) {
-            throw new CMDException("setFrequencyRegion is failed");
+            throw new ReaderCMDException("setFrequencyRegion is failed");
         }
         Thread.sleep(cmdInternal);
         return true;
@@ -236,7 +265,7 @@ public class CMDHelper {
     public static boolean setRfLinkProfile(RFIDReaderHelper readerHelper, byte proFileIDMode) throws InterruptedException {
         int res = readerHelper.setRfLinkProfile(CoreParam.READER_ID, proFileIDMode);
         if (res != 0) {
-            throw new CMDException("setRfLinkProfile is failed");
+            throw new ReaderCMDException("setRfLinkProfile is failed");
         }
         Thread.sleep(cmdInternal);
         return true;
@@ -253,7 +282,7 @@ public class CMDHelper {
     public static boolean setAntConnectionDetector(RFIDReaderHelper readerHelper, byte btDetectorStatus) throws InterruptedException {
         int res = readerHelper.setAntConnectionDetector(CoreParam.READER_ID, btDetectorStatus);
         if (res != 0) {
-            throw new CMDException("setAntConnectionDetector is failed");
+            throw new ReaderCMDException("setAntConnectionDetector is failed");
         }
         Thread.sleep(cmdInternal);
         return true;
@@ -273,14 +302,13 @@ public class CMDHelper {
      * @param readerHelper
      * @throws InterruptedException 线程中断异常
      */
-    public static void executeRealTimeInventory(RFIDReaderHelper readerHelper) throws InterruptedException {
+    public static void executeRealTimeInventory(RFIDReaderHelper readerHelper, RXObserverChild rxObserverChild) throws InterruptedException {
         stopFlag = false;
         while (true) {
             if (runFlag) {
-                System.out.println("********************盘存开始**************************");
                 exeRealTimeInventory(readerHelper);
 
-                RXObserverChild.tagPool.printPool();
+                rxObserverChild.getTagPool().printPool();
                 System.out.println("********************盘存结束**************************\n\n");
             } else {
                 //暂停状态
@@ -301,34 +329,31 @@ public class CMDHelper {
      * @param btArrAntennas 多天线数组
      * @throws InterruptedException
      */
-    public static void exeRealTimeInventoryBetweenAntennas(RFIDReaderHelper readerHelper, byte[] btArrAntennas) throws InterruptedException {
+    public static void exeRealTimeInventoryBetweenAntennas(RFIDReaderHelper readerHelper, byte[] btArrAntennas, RXObserverChild rxObserverChild) throws InterruptedException {
         stopFlag = false;
         //多天线 0x00 天线一  0x01  0x02  0x03 天线四
-        boolean onlyAnt = btArrAntennas.length <= 1 ? true : false;
         //当前天线数组索引
         int antIndex = 0;
         while (true) {
             if (runFlag) {
-                System.out.println("********************盘存开始**************************");
+
                 antIndex = antIndex < btArrAntennas.length ? antIndex : 0;
 
                 String antennaName = AntennaEnum.getNameByValue(btArrAntennas[antIndex]);
-                // 如果连接的天线数量大于1
-                if (!onlyAnt) {
-                    System.out.println("\n:开始连接" + antennaName);
-                    setWorkAntenna(readerHelper, btArrAntennas[antIndex]);
-                    antIndex++;
-                }
+                System.out.println("\n:开始连接" + antennaName);
+
+                setWorkAntenna(readerHelper, btArrAntennas[antIndex]);
+                antIndex++;
 
                 exeRealTimeInventory(readerHelper);
 
                 /*如果天线未连接 errorCode 0x22*/
                 //PrintUtils.printBtToStr(RXObserverChild.exeCMDStatus);
-                if (RXObserverChild.exeCMDStatus == (byte) 0x22) {
+                if (rxObserverChild.getExeCMDStatus() == (byte) 0x22) {
                     System.out.println("警告： " + antennaName + "未连接！！");
                     continue;
                 }
-                RXObserverChild.tagPool.printPool();
+                rxObserverChild.getTagPool().printPool();
                 System.out.println("********************盘存结束**************************\n\n");
             } else {
                 //暂停状态

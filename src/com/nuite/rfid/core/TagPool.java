@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 标签池，存放读取到的标签
+ * 标签池，存放读取到的标签,单例
  *
  * @Author: yangchuang
  * @Date: 2018/11/8 8:33
@@ -24,6 +24,7 @@ public class TagPool {
     private Map<String, Instant> pool = Collections.synchronizedMap(new LinkedHashMap(100));
     /**
      * 时间间隔,秒
+     * 超过时间间隔则从标签池中移除
      */
     private long interval = 3;
 
@@ -41,12 +42,12 @@ public class TagPool {
      */
     public void saveTag(String tagID) {
         Instant now = Instant.now();
-        String datetime = DateUtils.format(now);
+        //String datetime = DateUtils.format(now);
         if (pool.containsKey(tagID)) {
-            System.out.println("更新： " + tagID + "  " + datetime);
+            //System.out.println("更新： " + tagID + "  " + datetime);
             pool.replace(tagID, now);
         } else {
-            System.out.println("新增： " + tagID + "  " + datetime);
+            //System.out.println("新增： " + tagID + "  " + datetime);
             pool.put(tagID, now);
         }
     }
